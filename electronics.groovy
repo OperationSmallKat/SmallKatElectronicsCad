@@ -34,6 +34,7 @@ CSG getNut(){
 	StringParameter size = new StringParameter(	type+" Default",
 			sizeVar,
 			Vitamins.listVitaminSizes(type))
+	
 	String stl = "Battery.stl"
 	
 	if(size.getString().contentEquals("motherboard")) {
@@ -45,6 +46,9 @@ CSG getNut(){
 	return Vitamins.get(ScriptingEngine.fileFromGit(
 			"hhttps://github.com/OperationSmallKat/SmallKatElectronicsCad.git",
 			stl))
+			.moveToCenterX()
+			.moveToCenterY()
+			
 			.setParameter(size)
 			.setRegenerate({getNut()})
 }
