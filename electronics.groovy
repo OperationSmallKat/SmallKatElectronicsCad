@@ -2,6 +2,8 @@ import eu.mihosoft.vrl.v3d.CSG
 import eu.mihosoft.vrl.v3d.Cube
 import eu.mihosoft.vrl.v3d.Cylinder
 import eu.mihosoft.vrl.v3d.parametrics.*;
+
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
@@ -21,34 +23,30 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 
-	
+
 import eu.mihosoft.vrl.v3d.parametrics.*;
 CSG getNut(){
-	String type= "squareNut"
-	LengthParameter facets		= new LengthParameter("Bolt Hole Facet Count",10,[40,10])
-	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[180,10])
-	LengthParameter offset		= new LengthParameter("printerOffset",0.0,[2,0])
+	String type= "smallKatElectronics"
+
 	if(args==null)
-		args=["M3"]
+		args=["dji-mavic-pro-battery"]
 	String sizeVar = args.get(0)
 	StringParameter size = new StringParameter(	type+" Default",
-										sizeVar,
-										Vitamins.listVitaminSizes(type))
-	//println "Database loaded "+database
-	HashMap<String,Object> servoConfig = Vitamins.getConfiguration( type,size.getStrValue())
-	double w=Double.parseDouble(servoConfig.get("width").toString())+offset.getMM()
-	double h=Double.parseDouble(servoConfig.get("height").toString())
-
+			sizeVar,
+			Vitamins.listVitaminSizes(type))
+	String stl = "Battery.stl"
 	
-	CSG head =new Cube(w,w,h).toCSG() // a one line Cylinder
-				.toZMin()
-
-	return head
-		.setParameter(size)
-		.setParameter(boltLength)
-		.setParameter(facets)
-		.setParameter(offset)
-		.setRegenerate({getNut()})
+	if(size.getString().contentEquals("motherboard")) {
+		stl = "motherboard.stl"
+	}
+	if(size.getString().contentEquals("batteryInterface")) {
+		stl = "batteryInterface.stl"
+	}
+	return Vitamins.get(ScriptingEngine.fileFromGit(
+			"hhttps://github.com/OperationSmallKat/SmallKatElectronicsCad.git",
+			stl))
+			.setParameter(size)
+			.setRegenerate({getNut()})
 }
 //println "Hello World from Cap Screw script!"
 return getNut()
